@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        /* 전체 페이지의 스타일 설정 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 계산기 컨테이너 스타일 설정 */
+        .calculator {
+            width: 250px;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* 디스플레이 스타일 설정 */
+        .display {
+            width: 100%;
+            height: 50px;
+            background-color: #000;
+            color: #fff;
+            text-align: right;
+            padding: 10px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        /* 버튼 그룹 스타일 설정 */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        /* 버튼 스타일 설정 */
+        .button {
+            padding: 15px;
+            font-size: 1.2em;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        /* 버튼에 마우스를 올렸을 때의 스타일 설정 */
+        .button:hover {
+            background-color: #555;
+        }
+
+        /* 버튼을 클릭했을 때의 스타일 설정 */
+        .button:active {
+            background-color: #222;
+        }
+
+        /* 연산자 버튼의 스타일 설정 */
+        .button.operator {
+            background-color: #f69906;
+            color: #fff; 
+        }
+
+        /* 연산자 버튼에 마우스를 올렸을 때의 스타일 설정 */
+        .button.operator:hover {
+            background-color: #f57c00;
+        }
+    </style>
+    <script>
+        // 계산기의 현재 입력 상태를 저장하는 변수
+        let currentInput = '';
+        let operator = '';
+        let previousInput = '';
+
+        // 숫자 버튼 클릭 시 입력을 처리하는 함수
+        function appendNumber(number) {
+            currentInput += number; // 입력된 숫자를 currentInput에 추가
+            updateDisplay(currentInput); // 디스플레이를 업데이트하여 입력된 값을 표시
+        }
+
+        // 연산자 버튼 클릭 시 연산자를 처리하는 함수
+        function chooseOperator(op) {
+            // 현재 입력이 없고 이전 입력이 있을 경우, 연산자를 변경
+            if (currentInput === '' && previousInput !== '') {
+                operator = op;
+                updateDisplay(previousInput + ' ' + operator); // 연산자 표시 업데이트
+                return;
+            }
+
+            // 이전 입력이 있을 경우, 먼저 계산을 수행
+            if (previousInput !== '') {
+                compute(); // 이전 연산 수행
+            }
+
+            operator = op; // 새로운 연산자 저장
+            previousInput = currentInput; // 현재 입력을 이전 입력으로 저장
+            currentInput = ''; // 현재 입력 초기화
+            updateDisplay(previousInput + ' ' + operator); // 디스플레이 업데이트
+        }
+
+        // = 버튼 클릭 시 계산을 수행하는 함수
+        function compute() {
+            let computation;
+            const prev = parseFloat(previousInput); // 이전 입력을 숫자로 변환
+            const current = parseFloat(currentInput); // 현재 입력을 숫자로 변환
+            if (isNaN(prev) || isNaN(current)) return; // 숫자가 아닌 경우 계산 중단
+            switch (operator) { // 연산자에 따른 계산 수행
+                case '+':
+                    computation = prev + current;
+                    break;
+                case '-':
+                    computation = prev - current;
+                    break;
+                case '*':
+                    computation = prev * current;
+                    break;
+                case '/':
+                    computation = prev / current;
+                    break;
+                default:
+                    return;
+            }
+            currentInput = computation; // 계산 결과를 currentInput에 저장
+            operator = ''; // 연산자 초기화
+            previousInput = ''; // 이전 입력 초기화
+            updateDisplay(currentInput); // 디스플레이 업데이트
+        }
+
+        // 디스플레이를 업데이트하는 함수
+        function updateDisplay(value) {
+            document.getElementById('result').value = value; // 디스플레이에 값을 표시
+        }
+
+        // C 버튼 클릭 시 계산기를 초기화하는 함수
+        function clearCalculator() {
+            currentInput = ''; // 현재 입력 초기화
+            operator = ''; // 연산자 초기화
+            previousInput = ''; // 이전 입력 초기화
+            updateDisplay(''); // 디스플레이 초기화
+        }
+    </script>
+</head>
+<body>
+    <div class="calculator">
+        <!-- 결과를 표시할 디스플레이 영역 -->
+        <input type="text" id="result" class="display" readonly>
+        <!-- 계산기 버튼 그룹 -->
+        <div class="buttons">
+            <input type="button" value="7" class="button" onclick="appendNumber('7')">
+            <input type="button" value="8" class="button" onclick="appendNumber('8')">
+            <input type="button" value="9" class="button" onclick="appendNumber('9')">
+            <input type="button" value="/" class="button operator" onclick="chooseOperator('/')">
+            
+            <input type="button" value="4" class="button" onclick="appendNumber('4')">
+            <input type="button" value="5" class="button" onclick="appendNumber('5')">
+            <input type="button" value="6" class="button" onclick="appendNumber('6')">
+            <input type="button" value="*" class="button operator" onclick="chooseOperator('*')">
+            
+            <input type="button" value="1" class="button" onclick="appendNumber('1')">
+            <input type="button" value="2" class="button" onclick="appendNumber('2')">
+            <input type="button" value="3" class="button" onclick="appendNumber('3')">
+            <input type="button" value="-" class="button operator" onclick="chooseOperator('-')">
+            
+            <input type="button" value="0" class="button" onclick="appendNumber('0')">
+            <input type="button" value="C" class="button" onclick="clearCalculator()">
+            <input type="button" value="=" class="button operator" onclick="compute()">
+            <input type="button" value="+" class="button operator" onclick="chooseOperator('+')">
+        </div>
+    </div>
+</body>
+</html>
